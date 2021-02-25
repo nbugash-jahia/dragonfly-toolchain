@@ -20,13 +20,13 @@
     Optional: Add the toolchain.sh script to your `.bashrc`, `.bash_profile`, `.zshrc`, etc so that it'll be available everytime a new terminal gets created
     ```
     repo=dragonfly-guild-devops
-    ln -s $(pwd)/${repo}/toolchain.sh ${HOME}/.${repo}.sh
-    echo "source ${HOME}/.${repo}.sh" >> ${HOME}/.zshrc
+    ln -s ${repo}/toolchain.sh ${HOME}/.${repo}.sh
+    echo "[[ -f ${HOME}/.${repo}.sh ]] && source ${HOME}/.${repo}.sh" >> ${HOME}/.zshrc
     ```
 
 3. Get the dragonfly src code
     ```
-    get_dragonfly_src
+    df:install
     ```
 
 ### Supernode
@@ -34,15 +34,14 @@
 #### Building the supernode image
 
 ```bash
-repo=dragonfly-guild-devops ;\
-build_supernode_image ${repo}
+df:supernode:image:build
 ```
 
 ### Running the supernode container as a Standalone
 
 ```bash
 container_name=supernode ;\
-run_supernode_container ${container_name}
+df:supernode:container:run ${container_name}
 ```
 
 ### Running the supernode container using Docker Compose
@@ -50,9 +49,18 @@ run_supernode_container ${container_name}
 docker-compose up -d
 ```
 
+### Client
+#### Installing the client
+```bash
+df:client:install
+```
+#### Uninstall the client
+```bash
+df:client:uninstall
+```
 
 ## Tearing down environment
 When done or when you want to remove dragonfly from your local workstation, simply using the `nuke_dragonfly` function
 ```bash
-nuke_dragonfly
+df:nuke
 ```
