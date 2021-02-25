@@ -4,14 +4,14 @@
 1. Download the repository
 
     ```
-    repo=dragonfly-guild-devops ;\
-    git clone git@github.com:nbugash-jahia/dragonfly-guild-devops.git ${repo}
+    repo=dragonfly-toolchain ;\
+    git clone git@github.com:nbugash-jahia/dragonfly-toolchain.git ${repo}
     ```
 
 2. Export the functions from the `toolchain.sh` script
 
     ```
-    repo=dragonfly-guild-devops ;\
+    repo=dragonfly-toolchain ;\
     cd ${repo} ;\
     source ./toolchain.sh ;\
     cd -
@@ -19,7 +19,7 @@
 
     Optional: Add the toolchain.sh script to your `.bashrc`, `.bash_profile`, `.zshrc`, etc so that it'll be available everytime a new terminal gets created
     ```
-    repo=dragonfly-guild-devops
+    repo=dragonfly-toolchain
     ln -s ${repo}/toolchain.sh ${HOME}/.${repo}.sh
     echo "[[ -f ${HOME}/.${repo}.sh ]] && source ${HOME}/.${repo}.sh" >> ${HOME}/.zshrc
     ```
