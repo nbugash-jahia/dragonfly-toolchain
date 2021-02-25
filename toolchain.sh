@@ -164,48 +164,55 @@ remove_supernode_container() {
         echo "*******************************************"
         exit 1;
     fi
-    local container_name=$1
-    docker container rm ${container_name}
+    if [[ $# == "--help" ]]; then
+        echo "*******************************************"
+        echo "** Usage: $0 [container name]           ***"
+        echo "** Usage: $0 dragonfly-supernode        ***"
+        echo "*******************************************"
+    else
+        local container_name=$1
+        docker container rm ${container_name}
+    fi
 }
 
 nuke_dragonfly() {
-    local container_name=supernode;
-    local src_code_location=${DRAGONFLY_SRC_CODE_LOC};
-    if [[ $# -eq 2 ]]; then
+    if [[ $# == "--help" ]]; then
         echo "****************************************************"
         echo "** Usage: $0 [container_name] [src code location]***"
         echo "** Usage: $0                                     ***"
         echo "****************************************************"
-        container_name=$1;
-        src_code_location=$2;
+    else
+        local container_name=supernode;
+        local src_code_location=${DRAGONFLY_SRC_CODE_LOC};
+        [[ $# -eq 2 ]] && container_name=$1 && src_code_location=$2
+        echo "Deleting client"
+        uninstall_client ${src_code_location}
+        echo "Client deleted"
+        local supernode_container=supernode
+        echo "Deleting dragonfly from local"
+        echo "Stopping supernode container..."
+        local stop_supernode_container ${supernode_container}
+        echo "Supernode container stopped"
+        echo "Removing supernode container"
+        local remove_supernode_container ${supernode_container}
+        echo "Supernode container removed"
+        echo "Removing supernode image..."
+        local supernode_image_id=$(get_supernode_docker_image_id)
+        [[ ! -z ${supernode_image_id} ]] \
+        && docker image rm --force $(get_supernode_docker_image_id) \
+        && echo "Supernode removed" \
+        || echo "Supernode image not created."
+        echo "Deleting source code"
+        [[ -d ${src_code_location} ]] \
+        && rm -rf ${src_code_location} \
+        echo "Source code removed. Unsetting env DRAGONFLY_SRC_CODE_LOC" \
+        && unset DRAGONFLY_SRC_CODE_LOC \
+        && echo "DRAGONFLY_SRC_CODE_LOC unsetted" \
+        || echo "DRAGONFLY_SRC_CODE_LOC is not set" 
+        echo "Deleting hidden files created by Dragonfly"
+        [[ -d "${HOME}/.small-dragonfly" ]] \
+        && rm -rf ${HOME}/.small-dragonfly
     fi
-    echo "Deleting client"
-    uninstall_client ${src_code_location}
-    echo "Client deleted"
-    local supernode_container=supernode
-    echo "Deleting dragonfly from local"
-    echo "Stopping supernode container..."
-    local stop_supernode_container ${supernode_container}
-    echo "Supernode container stopped"
-    echo "Removing supernode container"
-    local remove_supernode_container ${supernode_container}
-    echo "Supernode container removed"
-    echo "Removing supernode image..."
-    local supernode_image_id=$(get_supernode_docker_image_id)
-    [[ ! -z ${supernode_image_id} ]] \
-    && docker image rm --force $(get_supernode_docker_image_id) \
-    && echo "Supernode removed" \
-    || echo "Supernode image not created."
-    echo "Deleting source code"
-    [[ -d ${src_code_location} ]] \
-    && rm -rf ${src_code_location} \
-    echo "Source code removed. Unsetting env DRAGONFLY_SRC_CODE_LOC" \
-    && unset DRAGONFLY_SRC_CODE_LOC \
-    && echo "DRAGONFLY_SRC_CODE_LOC unsetted" \
-    || echo "DRAGONFLY_SRC_CODE_LOC is not set" 
-    echo "Deleting hidden files created by Dragonfly"
-    [[ -d "${HOME}/.small-dragonfly" ]] \
-    && rm -rf ${HOME}/.small-dragonfly
 }
 
 print_help() {
